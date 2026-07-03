@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
 
-          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://profixapi.runasp.net";
           const res = await axios.post(`${baseUrl}/api/Auth/Login`, {
             userName: credentials?.email,
             password: credentials?.password,

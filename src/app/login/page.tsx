@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,13 +16,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 // import { useToast } from "@/hooks/use-toast"; 
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  // Accept email or username — API uses the field as 'userName'
+  email: z.string().min(1, "Please enter your email or username"),
+  password: z.string().min(1, "Please enter your password"),
 });
 
 export default function LoginPage() {
   const router = useRouter();
-  // const { toast } = useToast();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -31,6 +33,7 @@ export default function LoginPage() {
   const isPending = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setLoginError(null);
     const res = await signIn("credentials", {
       email: values.email,
       password: values.password,
@@ -38,7 +41,12 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      alert("Invalid credentials, please try again.");
+      // res.error contains the message thrown by authorize()
+      setLoginError(
+        res.error === "CredentialsSignin"
+          ? "Invalid email/username or password. Please try again."
+          : res.error
+      );
     } else {
       router.push("/");
       router.refresh();
@@ -111,6 +119,13 @@ export default function LoginPage() {
                   "Login"
                 )}
               </Button>
+
+              {/* Inline error message */}
+              {loginError && (
+                <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 text-center">
+                  {loginError}
+                </div>
+              )}
             </form>
           </Form>
 

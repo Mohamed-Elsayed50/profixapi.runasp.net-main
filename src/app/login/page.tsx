@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Loader2 } from "lucide-react"; 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -112,6 +113,34 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
+
+          {/* Register links */}
+          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+            <p className="text-sm text-slate-500">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/register"
+                className="font-semibold text-amber-700 hover:text-amber-800 hover:underline transition-colors"
+              >
+                Register here
+              </Link>
+            </p>
+            <div className="mt-3 flex items-center justify-center gap-4 text-xs text-slate-400">
+              <Link
+                href="/register?tab=customer"
+                className="hover:text-amber-700 transition-colors"
+              >
+                Register as Customer
+              </Link>
+              <span>·</span>
+              <Link
+                href="/register?tab=technician"
+                className="hover:text-amber-700 transition-colors"
+              >
+                Register as Technician
+              </Link>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -14,6 +14,36 @@ const isUserLikeSender = (sender?: string) => {
   return ["you", "user", "me"].includes(normalized);
 };
 
+const isAssistantLikeSender = (sender?: string) => {
+  const normalized = normalizeSender(sender);
+  return ["assistant", "ai", "bot", "system"].includes(normalized) || normalized.includes("assistant") || normalized.includes("ai");
+};
+
+const renderMessageContent = (text: string) => {
+  if (!text) return null;
+
+  const parts = text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <span
+          key={`${part}-${index}`}
+          className="rounded-md bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-800"
+        >
+          {part.slice(2, -2)}
+        </span>
+      );
+    }
+
+    return (
+      <span key={`${part}-${index}`} className="whitespace-pre-wrap">
+        {part}
+      </span>
+    );
+  });
+};
+
 const getMessageKey = (message: ChatMessage) => {
   const senderKey = isUserLikeSender(message.sender) ? "user" : normalizeSender(message.sender) || "unknown";
   return `${senderKey}:${normalizeText(message.message)}`;
@@ -198,19 +228,51 @@ export default function ChatbotPage() {
               </div>
             ) : displayMessages.length ? (
               <div className="space-y-4 pb-4">
-                {displayMessages.map((msg) => (
-                  <div key={msg.id} className="space-y-1">
-                    <p className="text-xs uppercase tracking-wide text-slate-400">{msg.sender || "User"}</p>
-                    <div className="rounded-3xl bg-white p-4 shadow-sm">
-                      <p className="text-sm text-slate-900">{msg.message}</p>
-                      <p className="mt-2 text-right text-[11px] text-slate-400">{msg.createdAt ? new Date(msg.createdAt).toLocaleString() : ""}</p>
+                {displayMessages.map((msg) => {
+                  const isAssistantMessage = isAssistantLikeSender(msg.sender);
+
+                  return (
+                    <div key={msg.id} className={`flex ${isAssistantMessage ? "justify-start" : "justify-end"}`}>
+                      <div
+                        className={`max-w-[85%] rounded-3xl border p-4 shadow-sm ${
+                          isAssistantMessage
+                            ? "border-amber-200 bg-gradient-to-br from-amber-50 to-white"
+                            : "border-slate-200 bg-slate-900 text-white"
+                        }`}
+                      >
+                        <div className="mb-2 flex items-center gap-2">
+                          <span
+                            className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                              isAssistantMessage ? "text-amber-700" : "text-slate-300"
+                            }`}
+                          >
+                            {isAssistantMessage ? "AI Assistant" : msg.sender || "You"}
+                          </span>
+                          {isAssistantMessage && (
+                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                              Smart
+                            </span>
+                          )}
+                        </div>
+                        <div className={`text-sm leading-7 ${isAssistantMessage ? "text-slate-800" : "text-white"}`}>
+                          {renderMessageContent(msg.message)}
+                        </div>
+                        <p className={`mt-2 text-right text-[11px] ${isAssistantMessage ? "text-slate-400" : "text-slate-300"}`}>
+                          {msg.createdAt ? new Date(msg.createdAt).toLocaleString() : ""}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {sendingMessage && (
-                  <div className="space-y-1">
-                    <p className="text-xs uppercase tracking-wide text-slate-400">AI</p>
-                    <div className="rounded-3xl bg-amber-50 p-4 shadow-sm">
+                  <div className="flex justify-start">
+                    <div className="max-w-[85%] rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-4 shadow-sm">
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-700">AI Assistant</span>
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          Smart
+                        </span>
+                      </div>
                       <div className="flex items-center gap-2 text-sm text-slate-700">
                         <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
                         <span>Thinking...</span>

@@ -21,7 +21,7 @@ export type Technician = {
   longitude?: number | null;
 };
 
-const BASE_URL = "https://profixapi.runasp.net";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
 interface CreateColumnsOptions {
   onEdit: (technician: Technician) => void;

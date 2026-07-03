@@ -7,7 +7,10 @@ type Order = {
   id: string;
   title?: string;
   description?: string;
-  technicianId?: string;
+  technicanName?: string;
+  technicanPhone?: string;
+  customerName?: string;
+  customerPhone?: string;
   status?: string;
   priority?: string;
   scheduledDate?: string;
@@ -56,6 +59,14 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "title",
     header: "Title",
   },
+    {
+    accessorKey: "customerName",
+    header: "Customer Name",
+  },
+      {
+    accessorKey: "customerPhone",
+    header: "Customer Phone",
+  },
   {
     accessorKey: "description",
     header: "Description",
@@ -69,8 +80,12 @@ export const columns: ColumnDef<Order>[] = [
     },
   },
   {
-    accessorKey: "technicianId",
-    header: "Technician ID",
+    accessorKey: "technicanName",
+    header: "technician name",
+  },
+    {
+    accessorKey: "technicanPhone",
+    header: "technician phone",
   },
   {
     accessorKey: "status",

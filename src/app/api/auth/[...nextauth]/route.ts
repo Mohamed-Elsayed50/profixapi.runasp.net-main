@@ -3,10 +3,10 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 import type { JWT } from "next-auth/jwt";
 
-// const NEXTAUTH_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-// const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET ?? "development-secret";
-// process.env.NEXTAUTH_URL = NEXTAUTH_URL;
-// process.env.NEXTAUTH_SECRET = NEXTAUTH_SECRET;
+const NEXTAUTH_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET ?? "development-secret";
+process.env.NEXTAUTH_URL = NEXTAUTH_URL;
+process.env.NEXTAUTH_SECRET = NEXTAUTH_SECRET;
 
 type AppToken = JWT & { accessToken?: string; role?: string };
 type AppSession = DefaultSession & { accessToken?: string; role?: string };
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
 
-          const baseUrl = "https://profixapi.runasp.net";
+          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
           const res = await axios.post(`${baseUrl}/api/Auth/Login`, {
             userName: credentials?.email,
             password: credentials?.password,
